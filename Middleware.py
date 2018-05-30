@@ -1,10 +1,8 @@
 import serial
 import time
 
- # id of the fountain associated with this data
 id="qiej2xxi7j"
-
-url_req="http://srv1.gabrio.ovh:9998/fountain_data/"+id
+path="http://srv1.gabrio.ovh:9998/fountain_data/"+id
 
 def send_measurements(ph,turb):
     r = requests.post(
@@ -14,7 +12,7 @@ def send_measurements(ph,turb):
 
 
 print '[***] Trying to open serial'
-ser=serial.Serial(port='COM5',timeout=3,baudrate=115200*2)
+ser=serial.Serial(port='COM4',timeout=3,baudrate=115200*2)
 print '[   ] ok.'
 
 print '[***] Start Reading from serial'
@@ -25,17 +23,25 @@ while(1):
 
     readed_split = readed.split(" ")
 
-
+    readed=readed_split
+    
     if len(readed)<=0 or readed[0]!="ALGG":
         print '[ ! ] Wrong message received'
+        print ""
         continue
 
-    ph = float(readed[1].split(":")[1])
-    turb = float(readed[2].split(":")[1])
+    ph = float(readed[1].split(":")[1])*5*3.5
+    turb = float(readed[2].split(":")[1])*5
 
-    print "[***] Sending to "+path+" ph:"+ph+" turb:"+turb 
-    status,txt = send_measurements(ph,turb)
-    print "[   ] Response("+status+"): "+txt
+
+    print "[***] Measured ph:"+ str(ph)+ ", turb:"+str(turb)
+
+    
+    #print "[***] Sending to "+path
+    #status,txt = send_measurements(ph,turb)
+    #print "[   ] Response("+status+"): "+txt
+
+    print ""
     
     c=c-1
     if c<0:
