@@ -3,7 +3,7 @@ import time
 import signal
 
 
-id="qiej2xxi7j"
+id="0gc2v3w039"
 path="http://srv1.gabrio.ovh:9998/fountain_data/"+id
 exit_flag=0
 
@@ -47,9 +47,9 @@ while(not exit_flag):
     print "[***] Measured ph:"+ str(ph)+ ", turb:"+str(turb)
 
     
-    #print "[***] Sending to "+path
-    #status,txt = send_measurements(ph,turb)
-    #print "[   ] Response("+status+"): "+txt
+    print "[***] Sending to "+path
+    status,txt = send_measurements(ph,turb)
+    print "[   ] Response("+status+"): "+txt
 
     print ""
     
