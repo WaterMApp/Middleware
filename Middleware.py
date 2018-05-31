@@ -2,17 +2,10 @@ import serial
 import time
 import signal
 
-
+port = "/dev/ttyACM0"
 id="0gc2v3w039"
 path="http://srv1.gabrio.ovh:9998/fountain_data/"+id
-exit_flag=0
 
-def signal_handler(signal, frame):
-        print('You pressed Ctrl+C! Exit gracefully')
-        exit_flag=1
-        ser.close()
-
-signal.signal(signal.SIGINT, signal_handler)
         
 def send_measurements(ph,turb):
     r = requests.post(
@@ -22,12 +15,13 @@ def send_measurements(ph,turb):
 
 
 print '[***] Trying to open serial'
-ser=serial.Serial(port='COM4',timeout=3,baudrate=115200*2)
+ser=serial.Serial(port=port,timeout=3,baudrate=115200*2)
 print '[   ] ok.'
 
 print '[***] Start Reading from serial'
 
-while(not exit_flag):
+def main():
+    
     readed = ser.readline().strip("\r\n")
     print '[   ] Readed: '+readed
 
@@ -38,7 +32,7 @@ while(not exit_flag):
     if len(readed)<=0 or readed[0]!="ALGG":
         print '[ ! ] Wrong message received'
         print ""
-        continue
+        return
 
     ph = float(readed[1].split(":")[1])*5*3.5
     turb = float(readed[2].split(":")[1])*5
@@ -52,5 +46,14 @@ while(not exit_flag):
     print "[   ] Response("+status+"): "+txt
 
     print ""
-    
+
+
+
+while(1):
+    try:
+        main()
+    except KeyboardInterrupt:
+        print "[ ! ] CTRL-C handled, exit gracefully."
+        ser.close()
+        break;
 
