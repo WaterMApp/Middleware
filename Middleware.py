@@ -1,15 +1,21 @@
 import serial
 import time
 import signal
+import os
+import requests
 
-port = "/dev/ttyACM0"
+if os.name =="nt":
+    port = "COM4"
+else:
+    port = "/dev/ttyACM0"
+    
 id="0gc2v3w039"
 path="http://srv1.gabrio.ovh:9998/fountain_data/"+id
 
         
 def send_measurements(ph,turb):
     r = requests.post(
-        url_req,
+        path,
         json={ 'ph':ph, 'turb':turb, 'temp': 23})
     return (r.status_code,r.text)
 
@@ -34,8 +40,8 @@ def main():
         print ""
         return
 
-    ph = float(readed[1].split(":")[1])*5*3.5
-    turb = float(readed[2].split(":")[1])*5
+    ph = float(readed[1].split(":")[1])
+    turb = float(readed[2].split(":")[1])
 
 
     print "[***] Measured ph:"+ str(ph)+ ", turb:"+str(turb)
@@ -43,7 +49,7 @@ def main():
     
     print "[***] Sending to "+path
     status,txt = send_measurements(ph,turb)
-    print "[   ] Response("+status+"): "+txt
+    print "[   ] Response("+str(status)+"): "+txt
 
     print ""
 
@@ -56,4 +62,3 @@ while(1):
         print "[ ! ] CTRL-C handled, exit gracefully."
         ser.close()
         break;
-
