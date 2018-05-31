@@ -1,9 +1,19 @@
 import serial
 import time
+import signal
+
 
 id="qiej2xxi7j"
 path="http://srv1.gabrio.ovh:9998/fountain_data/"+id
+exit_flag=0
 
+def signal_handler(signal, frame):
+        print('You pressed Ctrl+C! Exit gracefully')
+        exit_flag=1
+        ser.close()
+
+signal.signal(signal.SIGINT, signal_handler)
+        
 def send_measurements(ph,turb):
     r = requests.post(
         url_req,
@@ -16,8 +26,8 @@ ser=serial.Serial(port='COM4',timeout=3,baudrate=115200*2)
 print '[   ] ok.'
 
 print '[***] Start Reading from serial'
-c=100
-while(1):
+
+while(not exit_flag):
     readed = ser.readline().strip("\r\n")
     print '[   ] Readed: '+readed
 
@@ -43,9 +53,4 @@ while(1):
 
     print ""
     
-    c=c-1
-    if c<0:
-        ser.close()
-        break
-
 
